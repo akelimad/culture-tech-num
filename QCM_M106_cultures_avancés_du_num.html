@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Auto-Évaluation M106 cultures avancées du numérique</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  body { font-family: 'Segoe UI', Tahoma, sans-serif; }
+  .gradient-bg {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  }
+  .card-hover {
+    transition: all 0.3s ease;
+  }
+  .card-hover:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+  }
+  .answer-option {
+    transition: all 0.2s ease;
+  }
+  .answer-option:hover {
+    transform: translateX(4px);
+  }
+  .correct {
+    background: #d1fae5 !important;
+    border-color: #10b981 !important;
+  }
+  .incorrect {
+    background: #fee2e2 !important;
+    border-color: #ef4444 !important;
+  }
+  .progress-bar {
+    transition: width 0.5s ease;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .fade-in { animation: fadeIn 0.5s ease; }
+  .pulse-ring {
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(118,75,162,0.4); }
+    70% { box-shadow: 0 0 0 15px rgba(118,75,162,0); }
+    100% { box-shadow: 0 0 0 0 rgba(118,75,162,0); }
+  }
+</style>
+</head>
+<body class="bg-gray-50">
+
+<!-- HEADER -->
+<header class="gradient-bg text-white shadow-lg sticky top-0 z-50">
+  <div class="max-w-6xl mx-auto px-4 py-5 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <div class="bg-white/20 p-2 rounded-lg text-2xl">💻</div>
+      <div>
+        <h1 class="text-xl md:text-2xl font-bold">Préparation à l'EFM</h1>
+        <p class="text-xs md:text-sm text-white/80">Auto-évaluation — Module : Culture et techniques avancées du numérique</p>
+      </div>
+    </div>
+    <div class="hidden md:block text-right">
+      <p class="text-sm text-white/80">Stagiaires</p>
+      <p class="font-bold">28 thèmes • Quiz interactif</p>
+    </div>
+  </div>
+</header>
+
+<!-- HERO / INTRO -->
+<section class="gradient-bg text-white pb-12">
+  <div class="max-w-4xl mx-auto px-4 text-center">
+    <h2 class="text-3xl md:text-4xl font-extrabold mb-4">Testez vos connaissances 🚀</h2>
+    <p class="text-white/90 max-w-2xl mx-auto mb-6">Une série d'exercices d'auto-évaluation couvrant tous les éléments du programme. Choisissez un mode pour commencer et vérifiez votre niveau avant l'examen.</p>
+    <div class="flex flex-wrap justify-center gap-4">
+      <button onclick="startQuiz('all')" class="bg-white text-purple-700 font-bold px-6 py-3 rounded-full shadow-lg pulse-ring hover:scale-105 transition">Démarrer le Quiz complet</button>
+      <a href="#themes" class="bg-white/20 border border-white/40 px-6 py-3 rounded-full hover:bg-white/30 transition">Voir les thèmes</a>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<section class="max-w-6xl mx-auto px-4 -mt-8">
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+    <div class="bg-white rounded-xl shadow p-5 text-center card-hover">
+      <div class="text-3xl font-bold text-purple-600" id="stat-questions">30</div>
+      <div class="text-sm text-gray-500">Questions</div>
+    </div>
+    <div class="bg-white rounded-xl shadow p-5 text-center card-hover">
+      <div class="text-3xl font-bold text-indigo-600">28</div>
+      <div class="text-sm text-gray-500">Thèmes couverts</div>
+    </div>
+    <div class="bg-white rounded-xl shadow p-5 text-center card-hover">
+      <div class="text-3xl font-bold text-pink-600">QCM</div>
+      <div class="text-sm text-gray-500">Format</div>
+    </div>
+    <div class="bg-white rounded-xl shadow p-5 text-center card-hover">
+      <div class="text-3xl font-bold text-green-600">∞</div>
+      <div class="text-sm text-gray-500">Tentatives</div>
+    </div>
+  </div>
+</section>
+
+<!-- QUIZ AREA -->
+<section id="quiz-section" class="max-w-3xl mx-auto px-4 py-12 hidden">
+  <div class="bg-white rounded-2xl shadow-xl p-6 md:p-8">
+    <!-- Progress -->
+    <div class="flex items-center justify-between mb-2">
+      <span class="text-sm font-semibold text-gray-600" id="q-counter">Question 1 / 30</span>
+      <span class="text-sm font-semibold text-purple-600" id="score-live">Score : 0</span>
+    </div>
+    <div class="w-full bg-gray-200 rounded-full h-2 mb-6">
+      <div id="progress" class="progress-bar gradient-bg h-2 rounded-full" style="width:0%"></div>
+    </div>
+
+    <!-- Question -->
+    <div id="question-box" class="fade-in">
+      <span class="inline-block text-xs font-bold px-3 py-1 rounded-full bg-purple-100 text-purple-700 mb-3" id="q-theme">Thème</span>
+      <h3 class="text-lg md:text-xl font-bold text-gray-800 mb-5" id="q-text">Question...</h3>
+      <div id="options" class="space-y-3"></div>
+    </div>
+
+    <!-- Feedback -->
+    <div id="feedback" class="mt-5 hidden rounded-lg p-4 text-sm"></div>
+
+    <!-- Nav -->
+    <div class="mt-6 flex justify-between">
+      <button id="quit-btn" onclick="quitQuiz()" class="text-gray-400 hover:text-gray-600 text-sm">Quitter</button>
+      <button id="next-btn" onclick="nextQuestion()" class="gradient-bg text-white px-6 py-2 rounded-full font-semibold opacity-50 cursor-not-allowed" disabled>Suivant →</button>
+    </div>
+  </div>
+</section>
+
+<!-- RESULTS -->
+<section id="results-section" class="max-w-2xl mx-auto px-4 py-12 hidden">
+  <div class="bg-white rounded-2xl shadow-xl p-8 text-center fade-in">
+    <div class="text-6xl mb-4" id="result-emoji">🎉</div>
+    <h2 class="text-2xl font-bold text-gray-800 mb-2">Résultat de l'évaluation</h2>
+    <p class="text-gray-500 mb-6" id="result-msg"></p>
+    <div class="text-5xl font-extrabold gradient-bg bg-clip-text text-transparent mb-2" id="result-score">0/0</div>
+    <div class="text-lg text-gray-600 mb-6" id="result-percent">0%</div>
+    <div class="w-full bg-gray-200 rounded-full h-4 mb-6">
+      <div id="result-bar" class="progress-bar gradient-bg h-4 rounded-full" style="width:0%"></div>
+    </div>
+    <div class="flex flex-wrap justify-center gap-3">
+      <button onclick="startQuiz('all')" class="gradient-bg text-white px-6 py-3 rounded-full font-semibold hover:scale-105 transition">Recommencer</button>
+      <button onclick="quitQuiz()" class="bg-gray-100 text-gray-700 px-6 py-3 rounded-full font-semibold hover:bg-gray-200 transition">Retour aux thèmes</button>
+    </div>
+  </div>
+</section>
+
+<!-- THEMES GRID -->
+<section id="themes" class="max-w-6xl mx-auto px-4 py-12">
+  <h2 class="text-2xl md:text-3xl font-bold text-gray-800 mb-2 text-center">📚 Les 28 thèmes du programme</h2>
+  <p class="text-center text-gray-500 mb-8">Révisez chaque notion clé avant de passer au quiz.</p>
+  <div id="themes-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+</section>
+
+<!-- FOOTER -->
+<footer class="gradient-bg text-white py-8 mt-8">
+  <div class="max-w-6xl mx-auto px-4 text-center">
+    <p class="font-bold mb-1">Auto-évaluation - Module : Culture et techniques avancées du numérique</p>
+    <p class="text-sm text-white/70">Bon courage à tous les stagiaires ! 💪</p>
+  </div>
+</footer>
+
+<script>
+const themes = [
+  {icon:"🖥️", t:"Définition de l'ordinateur", d:"Machine électronique programmable qui traite des données (entrée → traitement → sortie)."},
+  {icon:"📦", t:"Types d'ordinateurs", d:"Ordinateur de bureau, portable, serveur, tablette, super-calculateur, etc."},
+  {icon:"🔧", t:"Composants matériels", d:"CPU, RAM/ROM, disque dur HDD/SSD, périphériques, connectiques."},
+  {icon:"💿", t:"Composants logiciels", d:"Système d'exploitation, logiciels d'application, pilotes, utilitaires."},
+  {icon:"⚙️", t:"Fonctionnement", d:"Cycle entrée-traitement-sortie-stockage et rôle de la mémoire."},
+  {icon:"🌐", t:"Avantages des réseaux", d:"Partage de ressources, de fichiers, communication, économie."},
+  {icon:"🔗", t:"Internet & WWW", d:"Réseau mondial vs ensemble de pages liées par hyperliens."},
+  {icon:"📱", t:"Appareils mobiles", d:"Smartphone, tablette, montre connectée, liseuse."},
+  {icon:"🤖", t:"OS Mobiles", d:"iOS (Apple) et Android (Google) et leurs caractéristiques."},
+  {icon:"🛡️", t:"Protection mobile", d:"Mot de passe, biométrie, antivirus, mises à jour, verrouillage."},
+  {icon:"🖨️", t:"Imprimantes", d:"Laser (toner) vs jet d'encre (cartouches)."},
+  {icon:"📄", t:"Extensions de fichiers", d:".docx, .pdf, .jpg, .mp3, .exe identifient le type de fichier."},
+  {icon:"🏷️", t:"Caractéristiques fichier", d:"Nom, taille, chemin (path), extension."},
+  {icon:"🗜️", t:"Compression", d:"Réduire la taille des fichiers (.zip, .rar)."},
+  {icon:"⚡", t:"Raccourcis", d:"Icône d'accès rapide vers un programme/fichier."},
+  {icon:"⌨️", t:"Raccourcis clavier", d:"Ctrl+C, Ctrl+V, Ctrl+Z, Alt+Tab..."},
+  {icon:"📏", t:"Unités de mesure", d:"bit, octet (b/o), Ko, Mo, Go, To."},
+  {icon:"💾", t:"Solutions de stockage", d:"HDD, SSD, USB, carte SD, Cloud, NAS."},
+  {icon:"⬛", t:"Commandes DOS", d:"dir, cd, copy, del, md, cls..."},
+  {icon:"📝", t:"Contenu numérique", d:"Word (texte), PowerPoint (présentations)."},
+  {icon:"🔢", t:"Adresse IP", d:"Identifiant numérique unique d'une machine sur un réseau."},
+  {icon:"🌍", t:"Nom de domaine", d:"Adresse lisible (ex: google.com) liée à une IP."},
+  {icon:"🧭", t:"Navigateur Web", d:"Chrome, Firefox, Edge, Safari pour consulter le web."},
+  {icon:"🔍", t:"Moteur de recherche", d:"Google, Bing : trouve des informations en ligne."},
+  {icon:"💬", t:"Communication synchrone", d:"En temps réel : chat, appel vidéo, visioconférence."},
+  {icon:"📧", t:"Communication asynchrone", d:"En différé : email, forum, courrier."},
+  {icon:"📬", t:"Accès à la messagerie", d:"Webmail, client de messagerie, protocoles POP/IMAP/SMTP."},
+  {icon:"👥", t:"Réseaux sociaux", d:"Facebook, Instagram, LinkedIn, X, TikTok, YouTube."}
+];
+
+// Render themes
+const grid = document.getElementById('themes-grid');
+themes.forEach((th,i)=>{
+  grid.innerHTML += `<div class="bg-white rounded-xl shadow p-5 card-hover">
+    <div class="flex items-start gap-3">
+      <span class="text-3xl">${th.icon}</span>
+      <div>
+        <h3 class="font-bold text-gray-800 text-sm mb-1">${i+1}. ${th.t}</h3>
+        <p class="text-xs text-gray-500 leading-relaxed">${th.d}</p>
+      </div>
+    </div>
+  </div>`;
+});
+
+// QUESTIONS
+const questions = [
+  {th:"Définition", q:"Qu'est-ce qu'un ordinateur ?", o:["Une calculatrice qui effectue uniquement des opérations mathématiques","Une machine électronique programmable qui traite des données","Un dispositif qui sert uniquement à stocker des informations","Un appareil purement mécanique sans circuit électronique"], c:1},
+  {th:"Types d'ordinateurs", q:"Lequel de ces éléments est un type d'ordinateur ?", o:["Le CPU","Le serveur","La RAM","Le clavier"], c:1},
+  {th:"Matériel - CPU", q:"Le CPU est considéré comme :", o:["La mémoire de stockage","Le cerveau de l'ordinateur","Un périphérique de sortie","Un logiciel"], c:1},
+  {th:"Mémoire", q:"La mémoire RAM est une mémoire :", o:["Permanente","Volatile (temporaire)","De stockage de masse","En lecture seule uniquement"], c:1},
+  {th:"Mémoire", q:"La mémoire ROM est :", o:["Volatile","En lecture seule","Modifiable facilement par l'utilisateur","Un disque dur"], c:1},
+  {th:"Stockage", q:"Quelle est la principale différence d'un SSD par rapport à un HDD ?", o:["Il est moins cher","Il est plus rapide et sans pièces mécaniques","Il a moins de capacité","Il est volatile"], c:1},
+  {th:"Périphériques", q:"Le clavier est un périphérique :", o:["De sortie","D'entrée","De stockage","De traitement"], c:1},
+  {th:"Logiciel", q:"Lequel est un composant logiciel ?", o:["Le disque dur","Le système d'exploitation","La carte mère","La souris"], c:1},
+  {th:"Fonctionnement", q:"Quel est le cycle de base d'un ordinateur ?", o:["Entrée - Stockage - Sortie","Entrée - Traitement - Sortie","Traitement - Entrée - Sortie","Sortie - Traitement - Entrée"], c:1},
+  {th:"Réseaux", q:"Quel est un avantage d'un réseau informatique ?", o:["Éliminer totalement le besoin de sécurité informatique","Partager des ressources et fichiers","Garantir une vitesse Internet illimitée","Remplacer entièrement le stockage local de chaque poste"], c:1},
+  {th:"Internet/WWW", q:"Le World Wide Web (WWW) est :", o:["Le réseau physique mondial","Un ensemble de pages reliées par hyperliens","Un type de câble","Un ordinateur"], c:1},
+  {th:"Mobiles", q:"Lequel est un appareil mobile ?", o:["Un serveur en salle machine","Un smartphone","Une imprimante laser","Un écran de bureau"], c:1},
+  {th:"OS Mobile", q:"iOS est le système d'exploitation de :", o:["Samsung","Apple","Huawei","Microsoft"], c:1},
+  {th:"OS Mobile", q:"Android est développé par :", o:["Apple","Google","Sony","IBM"], c:1},
+  {th:"Protection", q:"Quel est un moyen de protéger un appareil mobile ?", o:["Désactiver le mot de passe","Activer la reconnaissance biométrique","Ne jamais mettre à jour","Partager son code PIN"], c:1},
+  {th:"Imprimantes", q:"Une imprimante laser utilise :", o:["Des cartouches d'encre liquide","Du toner (poudre)","Du papier thermique uniquement","Un ruban"], c:1},
+  {th:"Imprimantes", q:"Une imprimante à jet d'encre utilise :", o:["Du toner","Des cartouches d'encre","Un laser","Des aiguilles"], c:1},
+  {th:"Extensions", q:"L'extension '.docx' correspond à un fichier :", o:["Image","Document Word","Vidéo","Audio"], c:1},
+  {th:"Extensions", q:"L'extension '.jpg' correspond à :", o:["Une image","Un texte","Un programme","Une feuille de calcul"], c:0},
+  {th:"Caractéristiques fichier", q:"Lequel N'EST PAS une caractéristique d'un fichier ?", o:["Le nom","La taille","Le type de processeur de l'ordinateur","L'extension"], c:2},
+  {th:"Compression", q:"À quoi sert la compression de fichiers ?", o:["Augmenter la taille du fichier pour plus de sécurité","Réduire la taille du fichier","Protéger le fichier par un mot de passe","Convertir automatiquement le format du fichier"], c:1},
+  {th:"Compression", q:"Quel format est utilisé pour la compression ?", o:[".txt",".zip",".docx",".mp4"], c:1},
+  {th:"Raccourcis", q:"Un raccourci sur le bureau permet de :", o:["Supprimer un programme","Accéder rapidement à un programme/fichier","Compresser un fichier","Imprimer un document"], c:1},
+  {th:"Raccourcis clavier", q:"Le raccourci Ctrl + C sert à :", o:["Coller","Copier","Couper","Annuler"], c:1},
+  {th:"Raccourcis clavier", q:"Le raccourci Ctrl + Z sert à :", o:["Sauvegarder","Annuler la dernière action","Coller","Tout sélectionner"], c:1},
+  {th:"Unités de mesure", q:"Combien d'octets dans 1 Ko (kilo-octet, approx.) ?", o:["10 octets","100 octets","1024 octets","1 octet"], c:2},
+  {th:"Unités de mesure", q:"Classez du plus petit au plus grand :", o:["Go > Mo > Ko","Ko < Mo < Go","To < Go < Mo","Mo < Ko < Go"], c:1},
+  {th:"Stockage numérique", q:"Lequel est une solution de stockage en ligne ?", o:["Le Cloud","Une clé USB","Le CPU","Le moniteur"], c:0},
+  {th:"DOS", q:"La commande DOS 'dir' permet de :", o:["Supprimer un fichier","Afficher le contenu d'un dossier","Copier un fichier","Effacer l'écran"], c:1},
+  {th:"DOS", q:"La commande DOS 'cls' permet de :", o:["Changer de dossier","Effacer l'écran","Lister les fichiers","Créer un dossier"], c:1},
+  {th:"Contenu numérique", q:"Quel logiciel sert à créer des présentations ?", o:["Microsoft Word","Microsoft PowerPoint","Microsoft Excel","Bloc-notes"], c:1},
+  {th:"Adresse IP", q:"Une adresse IP est :", o:["Le nom d'un fichier","Un identifiant numérique d'une machine sur un réseau","Un type de logiciel","Une extension de fichier"], c:1},
+  {th:"Nom de domaine", q:"'google.com' est un exemple de :", o:["Adresse IP","Nom de domaine","Extension de fichier","Commande DOS"], c:1},
+  {th:"Navigateur", q:"Lequel est un navigateur Web ?", o:["Google Chrome","Windows 10","Microsoft Word","Android"], c:0},
+  {th:"Moteur de recherche", q:"Lequel est un moteur de recherche ?", o:["Firefox","Google","Gmail","Windows"], c:1},
+  {th:"Communication", q:"Une communication synchrone est :", o:["En temps réel (chat, appel)","En différé (email)","Toujours écrite","Sans Internet"], c:0},
+  {th:"Communication", q:"L'email est un exemple de communication :", o:["Synchrone","Asynchrone","Vidéo en direct","Téléphonique"], c:1},
+  {th:"Messagerie", q:"Le 'webmail' permet d'accéder à sa messagerie via :", o:["Un navigateur web","Un logiciel client de messagerie installé (type Outlook)","Une imprimante connectée","Le BIOS de la machine"], c:0},
+  {th:"Réseaux sociaux", q:"Lequel est principalement un réseau social professionnel ?", o:["TikTok","LinkedIn","Instagram","Snapchat"], c:1}
+];
+
+let order=[], current=0, score=0, answered=false, currentShuffle=[];
+
+function shuffleArray(arr){
+  const a=[...arr];
+  for(let i=a.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+
+function startQuiz(){
+  // pick 30 random questions
+  order = [...questions].sort(()=>Math.random()-0.5).slice(0,30);
+  document.getElementById('stat-questions').textContent = order.length;
+  current=0; score=0; answered=false;
+  document.getElementById('themes').classList.add('hidden');
+  document.getElementById('results-section').classList.add('hidden');
+  document.getElementById('quiz-section').classList.remove('hidden');
+  document.getElementById('quiz-section').scrollIntoView({behavior:'smooth'});
+  renderQuestion();
+}
+
+function renderQuestion(){
+  answered=false;
+  const q=order[current];
+  document.getElementById('q-counter').textContent=`Question ${current+1} / ${order.length}`;
+  document.getElementById('score-live').textContent=`Score : ${score}`;
+  document.getElementById('progress').style.width=`${(current/order.length)*100}%`;
+  document.getElementById('q-theme').textContent=q.th;
+  document.getElementById('q-text').textContent=q.q;
+  document.getElementById('feedback').classList.add('hidden');
+  const next=document.getElementById('next-btn');
+  next.disabled=true; next.classList.add('opacity-50','cursor-not-allowed');
+  next.textContent = current===order.length-1 ? 'Voir le résultat 🏁':'Suivant →';
+  const box=document.getElementById('options');
+  box.innerHTML='';
+  const letters=['A','B','C','D'];
+  currentShuffle = shuffleArray(q.o.map((_,idx)=>idx));
+  currentShuffle.forEach((origIdx,pos)=>{
+    box.innerHTML+=`<button class="answer-option w-full text-left border-2 border-gray-200 rounded-xl px-4 py-3 flex items-center gap-3 hover:border-purple-400" data-idx="${origIdx}" onclick="selectAnswer(${origIdx})">
+      <span class="flex-shrink-0 w-7 h-7 rounded-full bg-purple-100 text-purple-700 font-bold flex items-center justify-center text-sm">${letters[pos]}</span>
+      <span class="text-gray-700 text-sm">${q.o[origIdx]}</span>
+    </button>`;
+  });
+  document.getElementById('question-box').classList.remove('fade-in');
+  void document.getElementById('question-box').offsetWidth;
+  document.getElementById('question-box').classList.add('fade-in');
+}
+
+function selectAnswer(idx){
+  if(answered) return;
+  answered=true;
+  const q=order[current];
+  const btns=document.querySelectorAll('#options button');
+  btns.forEach((b)=>{
+    const bIdx=parseInt(b.dataset.idx);
+    b.disabled=true;
+    if(bIdx===q.c) b.classList.add('correct');
+    if(bIdx===idx && idx!==q.c) b.classList.add('incorrect');
+  });
+  const fb=document.getElementById('feedback');
+  fb.classList.remove('hidden');
+  if(idx===q.c){
+    score++;
+    fb.className='mt-5 rounded-lg p-4 text-sm bg-green-50 text-green-700 border border-green-200';
+    fb.innerHTML='✅ <strong>Bonne réponse !</strong>';
+  } else {
+    fb.className='mt-5 rounded-lg p-4 text-sm bg-red-50 text-red-700 border border-red-200';
+    fb.innerHTML=`❌ <strong>Réponse incorrecte.</strong> La bonne réponse était : <em>${q.o[q.c]}</em>`;
+  }
+  document.getElementById('score-live').textContent=`Score : ${score}`;
+  const next=document.getElementById('next-btn');
+  next.disabled=false; next.classList.remove('opacity-50','cursor-not-allowed');
+}
+
+function nextQuestion(){
+  if(!answered) return;
+  current++;
+  if(current>=order.length){ showResults(); }
+  else renderQuestion();
+}
+
+function showResults(){
+  document.getElementById('quiz-section').classList.add('hidden');
+  const r=document.getElementById('results-section');
+  r.classList.remove('hidden');
+  r.scrollIntoView({behavior:'smooth'});
+  const pct=Math.round((score/order.length)*100);
+  document.getElementById('result-score').textContent=`${score}/${order.length}`;
+  document.getElementById('result-percent').textContent=`${pct}%`;
+  setTimeout(()=>{document.getElementById('result-bar').style.width=pct+'%';},100);
+  let emoji,msg;
+  if(pct>=80){emoji='🏆';msg='Excellent ! Vous êtes bien préparé(e) pour l\'EFM.';}
+  else if(pct>=60){emoji='👍';msg='Bon travail ! Quelques révisions et ce sera parfait.';}
+  else if(pct>=40){emoji='📖';msg='Niveau moyen. Continuez à réviser les thèmes.';}
+  else{emoji='💪';msg='Ne lâchez rien ! Revoyez les fiches puis réessayez.';}
+  document.getElementById('result-emoji').textContent=emoji;
+  document.getElementById('result-msg').textContent=msg;
+}
+
+function quitQuiz(){
+  document.getElementById('quiz-section').classList.add('hidden');
+  document.getElementById('results-section').classList.add('hidden');
+  document.getElementById('themes').classList.remove('hidden');
+  document.getElementById('themes').scrollIntoView({behavior:'smooth'});
+}
+</script>
+</body>
+</html>
